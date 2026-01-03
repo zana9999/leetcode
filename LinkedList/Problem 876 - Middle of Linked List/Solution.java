@@ -1,5 +1,6 @@
 import LinkedList.ListNode;
 
+
 public class Solution {
     public ListNode middleNode(ListNode head) {
        
