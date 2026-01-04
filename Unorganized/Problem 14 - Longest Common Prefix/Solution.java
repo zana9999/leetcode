@@ -1,3 +1,4 @@
+
 import java.util.*;
 
 class Solution {
@@ -20,25 +21,6 @@ class Solution {
         System.out.println(str.toString());
         return str.toString();
     }
-
-     public static void main(String[] args) {
-        Solution sol = new Solution();
-        String[] strs1 = {"flower", "flow", "flight"};
-        System.out.println("Input: [\"flower\", \"flow\", \"flight\"]");
-        System.out.println("Output: " + sol.longestCommonPrefix(strs1));
-
-        // Test case 2
-        String[] strs2 = {"dog", "racecar", "car"};
-        System.out.println("Input: [\"dog\", \"racecar\", \"car\"]");
-        System.out.println("Output: " + sol.longestCommonPrefix(strs2));
-
-        // Test case 3
-        String[] strs3 = {"interview", "internet", "internal"};
-        System.out.println("Input: [\"interview\", \"internet\", \"internal\"]");
-        System.out.println("Output: " + sol.longestCommonPrefix(strs3));
-    }
-
-
 
 }
 
