@@ -1,33 +1,46 @@
-- name: Send commit info to Discord
-  env:
-    DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-  run: |
-    # Get latest commit info
-    COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-    COMMIT_AUTHOR=$(git log -1 --pretty=%an)
-    COMMIT_HASH=$(git log -1 --pretty=%H)
-    REPO_NAME=${GITHUB_REPOSITORY}
-    BRANCH_NAME=${GITHUB_REF#refs/heads/}
+name: Discord Commit Notifier
 
-    # Build JSON payload
-    JSON_PAYLOAD=$(jq -n \
-      --arg title "New commit pushed to $BRANCH_NAME" \
-      --arg description "$COMMIT_MESSAGE" \
-      --arg author "$COMMIT_AUTHOR" \
-      --arg repo "$REPO_NAME" \
-      --arg url "https://github.com/$REPO_NAME/commit/$COMMIT_HASH" \
-      '{
-        username: "GitHub Bot",
-        embeds: [{
-          title: $title,
-          url: $url,
-          description: $description,
-          color: 16711985,
-          author: { name: $author },
-          footer: { text: "Repository: \($repo)" },
-          timestamp: now | todate
-        }]
-      }')
+# Trigger workflow on push to master or manual run
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
 
-    # Send payload to Discord
-    curl -f -H "Content-Type: application/json" -d "$JSON_PAYLOAD" $DISCORD_WEBHOOK
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Send commit info to Discord
+      - name: Send commit info to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          # Get latest commit info
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          COMMIT_AUTHOR=$(git log -1 --pretty=%an)
+          COMMIT_HASH=$(git log -1 --pretty=%H)
+          REPO_NAME=${GITHUB_REPOSITORY}
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+
+          # Build JSON payload
+          JSON_PAYLOAD=$(jq -n \
+            --arg title "New commit pushed to $BRANCH_NAME" \
+            --arg description "$COMMIT_MESSAGE" \
+            --arg author "$COMMIT_AUTHOR" \
+            --arg repo "$REPO_NAME" \
+            --arg url "https://github.com/$REPO_NAME/commit/$COMMIT_HASH" \
+            '{
+              username: "GitHub Bot",
+              embeds: [{
+                title: $title,
+                url: $url,
+                description: $description,
+                color: 16711985,
+                author: { name: $author },
+                footer: { text: "Repository:
